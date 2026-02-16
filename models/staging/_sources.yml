@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: sample
+    description: "サンプルデータソース (実際の Snowflake スキーマに合わせて変更してください)"
+    database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
+    schema: raw
+    tables:
+      - name: orders
+        description: "注文データ"
+        columns:
+          - name: order_id
+            description: "注文 ID"
+          - name: customer_id
+            description: "顧客 ID"
+          - name: order_date
+            description: "注文日"
+          - name: amount
+            description: "注文金額"

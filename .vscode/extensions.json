@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "innoverio.vscode-dbt-power-user",
+    "bastienboutonnet.vscode-dbt",
+    "ms-python.python",
+    "redhat.vscode-yaml",
+    "editorconfig.editorconfig"
+  ]
+}
