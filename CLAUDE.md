@@ -43,6 +43,11 @@ dbt test -s model_name       # 単一モデルのテスト
 - 新しいソーステーブルを追加する場合は `models/staging/_sources.yml` に定義を追加する
 - 環境変数は `{{ env_var('VAR_NAME') }}` で参照する
 
+## Git
+
+- IMPORTANT: コミットメッセージは Conventional Commits に従う (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`)
+- スコープは任意 (例: `feat(models): add dim_customers`)
+
 ## materialization
 
 - `models/staging/`: view (デフォルト設定済み)
