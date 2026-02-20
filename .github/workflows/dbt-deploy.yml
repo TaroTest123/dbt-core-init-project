@@ -31,7 +31,7 @@ jobs:
           default-config-file-path: config.toml
 
       - name: Deploy dbt project
-        run: snow dbt deploy tokyopower_project --source . --default-target "$SNOW_TARGET" --force -x
+        run: snow dbt deploy tokyopower_transform --source . --default-target "$SNOW_TARGET" --force -x
 
       - name: Execute dbt build
-        run: snow dbt execute tokyopower_project build --target "$SNOW_TARGET" -x
+        run: snow dbt execute tokyopower_transform build --target "$SNOW_TARGET" -x
