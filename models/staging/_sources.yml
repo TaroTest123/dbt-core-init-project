@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: tokyopower
     description: "東京電力データソース"
-    database: "{% if target.name == 'prod' %}TOKYOPOWER_PROD{% else %}TOKYOPOWER{% endif %}"
+    database: "{% if target.name in ('prod', 'snowflake_prod') %}TOKYOPOWER_PROD{% else %}TOKYOPOWER{% endif %}"
     schema: PUBLIC
     tables:
       - name: solar_power
