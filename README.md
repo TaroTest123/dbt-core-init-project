@@ -75,6 +75,31 @@ dbt docs generate # ドキュメント生成
 dbt docs serve    # ドキュメント閲覧
 ```
 
+## CI/CD (GitHub Actions)
+
+`development` ブランチへの push で dev 環境、`main` へのマージで prod 環境に自動デプロイされます。
+
+### GitHub Secrets の設定
+
+リポジトリの **Settings > Secrets and variables > Actions** で以下のシークレットを登録してください。
+
+| シークレット名 | 説明 | 例 |
+|---|---|---|
+| `SNOWFLAKE_ACCOUNT` | Snowflake アカウント識別子 | `xy12345.ap-northeast-1.aws` |
+| `SNOWFLAKE_USER` | Snowflake ユーザー名 | `DBT_USER` |
+| `SNOWFLAKE_PASSWORD` | Snowflake パスワード | — |
+| `SNOWFLAKE_ROLE` | 使用するロール | `TRANSFORMER` |
+| `SNOWFLAKE_WAREHOUSE` | 使用するウェアハウス | `TRANSFORMING` |
+| `SNOWFLAKE_DATABASE` | dev 用データベース | `ANALYTICS` |
+| `SNOWFLAKE_DATABASE_PROD` | prod 用データベース | `ANALYTICS_PROD` |
+
+> `.env` ファイルに設定しているものと同じ値を登録すれば OK です。
+
+### デプロイフロー
+
+1. `development` ブランチに push → `dbt build --target dev` が実行される
+2. `main` ブランチに PR をマージ → `dbt build --target prod` が実行される
+
 ## 命名規則
 
 | レイヤー | プレフィックス | 例 |
