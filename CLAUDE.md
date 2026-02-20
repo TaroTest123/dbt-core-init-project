@@ -60,10 +60,11 @@ dbt test -s model_name       # 単一モデルのテスト
 
 ## Snowflake-native dbt (定期実行)
 
-- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.TOKYOPOWER_PROJECT` — Snowflake-native dbt プロジェクト (`EXECUTE DBT PROJECT`)
-- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.DAILY_DBT_BUILD` — 毎日 JST 00:35 に `dbt build --target snowflake_prod` を実行する Snowflake Task
-- Git リポジトリ連携: `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.DBT_CORE_REPO` (main ブランチ)
-- コード更新後は `ALTER GIT REPOSITORY ... FETCH` → `ALTER DBT PROJECT ... ADD VERSION FROM ...` で反映
+- 各環境に `TOKYOPOWER_PROJECT` (dbt プロジェクト)、`DBT_CORE_REPO` (Git 連携)、`DAILY_DBT_BUILD` (Task) を配置
+- `TOKYOPOWER_ANALYTICS.PUBLIC` (dev): `development` ブランチ / `snowflake_dev` ターゲット
+- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC` (prod): `main` ブランチ / `snowflake_prod` ターゲット
+- 両環境とも毎日 JST 00:35 に `dbt build` を自動実行
+- コード更新後の反映: `ALTER GIT REPOSITORY ... FETCH` → `ALTER DBT PROJECT ... ADD VERSION FROM ...`
 
 ## 環境 (dev / prod)
 
