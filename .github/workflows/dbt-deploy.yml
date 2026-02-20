@@ -6,19 +6,21 @@ on:
       - development
       - main
 
-env:
-  DBT_PROFILES_DIR: ${{ github.workspace }}
-  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-  SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-  SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-  SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-  SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-  SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
-
 jobs:
   dbt-build:
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+
+    env:
+      DBT_PROFILES_DIR: ${{ github.workspace }}
+      DBT_TARGET: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+      SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
 
     steps:
       - name: Checkout repository
@@ -34,14 +36,6 @@ jobs:
 
       - name: Install dbt packages
         run: dbt deps
-
-      - name: Set dbt target
-        run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            echo "DBT_TARGET=prod" >> "$GITHUB_ENV"
-          else
-            echo "DBT_TARGET=dev" >> "$GITHUB_ENV"
-          fi
 
       - name: dbt build
         run: dbt build --target "$DBT_TARGET"
