@@ -17,3 +17,15 @@ sources:
             description: "注文日"
           - name: amount
             description: "注文金額"
+
+  - name: tokyopower
+    description: "東京電力データソース"
+    database: TOKYOPOWER
+    schema: PUBLIC
+    tables:
+      - name: solar_power
+        description: "太陽光発電データ"
+        loaded_at_field: "to_timestamp(date, 'YYYY/MM/DD')"
+        freshness:
+          warn_after: {count: 1, period: day}
+          error_after: {count: 2, period: day}
