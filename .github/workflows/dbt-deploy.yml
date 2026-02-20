@@ -18,15 +18,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Snowflake CLI
-        uses: snowflakedb/snowflake-cli-action@v2.0
-
-      - name: Configure Snowflake connection
+      - name: Generate Snowflake config
         run: |
-          mkdir -p ~/.snowflake
-          touch ~/.snowflake/config.toml
-          chmod 0600 ~/.snowflake/config.toml
-          cat > ~/.snowflake/config.toml << 'EOF'
+          cat > snowflake-config.toml << 'EOF'
           [connections.default]
           account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
           user = "${{ secrets.SNOWFLAKE_USER }}"
@@ -36,6 +30,11 @@ jobs:
           database = "${{ secrets.SNOWFLAKE_DATABASE }}"
           schema = "PUBLIC"
           EOF
+
+      - name: Install Snowflake CLI
+        uses: snowflakedb/snowflake-cli-action@v2.0
+        with:
+          default-config-file-path: snowflake-config.toml
 
       - name: Deploy dbt project
         run: snow dbt deploy tokyopower_transform --source . --default-target "$SNOW_TARGET" --force -x
