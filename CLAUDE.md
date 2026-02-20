@@ -58,11 +58,12 @@ dbt test -s model_name       # 単一モデルのテスト
 - Snowflake 認証情報は GitHub Secrets に設定が必要:
   `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_DATABASE_PROD`
 
-## Snowflake Task (定期実行)
+## Snowflake-native dbt (定期実行)
 
-- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.REFRESH_FCT_SOLAR_POWER` — 毎日 UTC 00:10 に `fct_solar_power` テーブルを再構築
-- staging view (`stg_tokyopower__solar_power`) は常に最新のため再構築不要
-- 新しい marts テーブルを追加した場合は、対応する Snowflake Task も作成すること
+- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.TOKYOPOWER_PROJECT` — Snowflake-native dbt プロジェクト (`EXECUTE DBT PROJECT`)
+- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.DAILY_DBT_BUILD` — 毎日 UTC 00:10 に `dbt build --target snowflake_prod` を実行する Snowflake Task
+- Git リポジトリ連携: `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.DBT_CORE_REPO` (main ブランチ)
+- コード更新後は `ALTER GIT REPOSITORY ... FETCH` → `ALTER DBT PROJECT ... ADD VERSION FROM ...` で反映
 
 ## 環境 (dev / prod)
 
