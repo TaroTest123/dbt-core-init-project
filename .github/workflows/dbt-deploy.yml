@@ -24,6 +24,8 @@ jobs:
       - name: Configure Snowflake connection
         run: |
           mkdir -p ~/.snowflake
+          touch ~/.snowflake/config.toml
+          chmod 0600 ~/.snowflake/config.toml
           cat > ~/.snowflake/config.toml << 'EOF'
           [connections.default]
           account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
