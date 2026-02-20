@@ -1,8 +1,2 @@
 [connections.default]
-account = ""
-user = ""
-password = ""
-role = ""
-warehouse = ""
-database = ""
 schema = "PUBLIC"
