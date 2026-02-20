@@ -93,15 +93,15 @@ dbt docs serve    # ドキュメント閲覧
 | `SNOWFLAKE_ROLE` | 使用するロール | `TRANSFORMER` |
 | `SNOWFLAKE_WAREHOUSE` | 使用するウェアハウス | `TRANSFORMING` |
 
-#### 環境ごとのシークレット
+#### 環境ごとのシークレット (モデル出力先)
 
-| 環境 | シークレット名 | 説明 |
-|---|---|---|
-| `dev` | `SNOWFLAKE_DATABASE` | dev 用データベース |
-| `prod` | `SNOWFLAKE_DATABASE` | prod 用データベース |
-| `prod` | `SNOWFLAKE_DATABASE_PROD` | prod 用データベース (`profiles.yml` が参照) |
+| 環境 | シークレット名 | 値の例 | 説明 |
+|---|---|---|---|
+| `dev` | `SNOWFLAKE_DATABASE` | `TOKYOPOWER_ANALYTICS` | dev モデル出力先 |
+| `prod` | `SNOWFLAKE_DATABASE` | `TOKYOPOWER_ANALYTICS_PROD` | (ワークフロー env 用) |
+| `prod` | `SNOWFLAKE_DATABASE_PROD` | `TOKYOPOWER_ANALYTICS_PROD` | prod モデル出力先 (`profiles.yml` が参照) |
 
-> `.env` ファイルに設定しているものと同じ値を登録すれば OK です。prod 環境では必要に応じてロールやウェアハウスを変更できます。
+> **注意**: モデル出力先とソースデータは別のデータベースに分離しています。ソースデータ (`TOKYOPOWER` / `TOKYOPOWER_PROD`) は `_sources.yml` で定義されており、GitHub Secrets の設定は不要です。
 
 ### デプロイフロー
 
@@ -112,5 +112,5 @@ dbt docs serve    # ドキュメント閲覧
 
 | レイヤー | プレフィックス | 例 |
 |---------|-------------|-----|
-| staging | `stg_<source>__<table>` | `stg_sample__orders` |
-| marts   | `fct_` / `dim_`        | `fct_orders`, `dim_customers` |
+| staging | `stg_<source>__<table>` | `stg_tokyopower__solar_power` |
+| marts   | `fct_` / `dim_`        | `fct_solar_power`, `dim_customers` |

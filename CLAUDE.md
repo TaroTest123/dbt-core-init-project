@@ -62,8 +62,9 @@ dbt test -s model_name       # 単一モデルのテスト
 
 - デフォルトターゲットは `dev` (`profiles.yml` の `target: dev`)
 - 本番実行: `dbt run --target prod` / `dbt build --target prod`
-- `prod` ターゲットは `SNOWFLAKE_DATABASE_PROD` 環境変数を使用する
-- ソース `tokyopower` のデータベースは `target.name` で自動切り替え (dev: `TOKYOPOWER`, prod: `TOKYOPOWER_PROD`)
+- ソースデータベースとモデル出力先データベースは分離する:
+  - ソース (参照のみ): `TOKYOPOWER` (dev) / `TOKYOPOWER_PROD` (prod) — `_sources.yml` で `target.name` により自動切り替え
+  - モデル出力先: `TOKYOPOWER_ANALYTICS` (dev) / `TOKYOPOWER_ANALYTICS_PROD` (prod) — `profiles.yml` の `database` で設定
 
 ## materialization
 
