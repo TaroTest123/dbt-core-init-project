@@ -44,7 +44,7 @@ jobs:
           default-config-file-path: snowflake-config.toml
 
       - name: Deploy dbt project
-        run: snow dbt deploy tokyopower_transform --source . --default-target "$SNOW_TARGET" --force -x
+        run: snow dbt deploy tokyopower_transform --source . --default-target "$SNOW_TARGET" --force --database "$SNOWFLAKE_DATABASE" --schema PUBLIC -x
 
       - name: Execute dbt build
         run: snow dbt execute tokyopower_transform build --target "$SNOW_TARGET" -x
