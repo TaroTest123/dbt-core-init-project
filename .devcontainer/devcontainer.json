@@ -20,7 +20,9 @@
         "bastienboutonnet.vscode-dbt",
         "ms-python.python",
         "redhat.vscode-yaml",
-        "editorconfig.editorconfig"
+        "editorconfig.editorconfig",
+        "snowflake.snowflake-vsc",
+        "anthropic.claude-code"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/usr/local/bin/python"

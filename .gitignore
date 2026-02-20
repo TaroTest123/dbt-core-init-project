@@ -13,6 +13,9 @@ __pycache__/
 # Environment
 .env
 
+# Claude Code
+.claude/
+
 # IDE
 .idea/
 *.swp
