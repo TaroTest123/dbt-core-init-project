@@ -13,6 +13,13 @@ jobs:
 
     env:
       SNOW_TARGET: ${{ github.ref_name == 'main' && 'snowflake_prod' || 'snowflake_dev' }}
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+      SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
 
     steps:
       - name: Checkout repository
@@ -35,16 +42,6 @@ jobs:
         uses: snowflakedb/snowflake-cli-action@v2.0
         with:
           default-config-file-path: snowflake-config.toml
-
-      - name: Debug connection config
-        run: |
-          snow --version
-          echo "--- config file ---"
-          ls -la ~/.snowflake/config.toml
-          echo "--- config keys ---"
-          grep -oP '^\w+' ~/.snowflake/config.toml || true
-          echo "--- connection test ---"
-          snow connection test || true
 
       - name: Deploy dbt project
         run: snow dbt deploy tokyopower_transform --source . --default-target "$SNOW_TARGET" --force -x
