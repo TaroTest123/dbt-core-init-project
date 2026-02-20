@@ -36,6 +36,16 @@ jobs:
         with:
           default-config-file-path: snowflake-config.toml
 
+      - name: Debug connection config
+        run: |
+          snow --version
+          echo "--- config file ---"
+          ls -la ~/.snowflake/config.toml
+          echo "--- config keys ---"
+          grep -oP '^\w+' ~/.snowflake/config.toml || true
+          echo "--- connection test ---"
+          snow connection test || true
+
       - name: Deploy dbt project
         run: snow dbt deploy tokyopower_transform --source . --default-target "$SNOW_TARGET" --force -x
 
