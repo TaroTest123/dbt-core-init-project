@@ -7,35 +7,31 @@ on:
       - main
 
 jobs:
-  dbt-build:
+  dbt-deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
 
     env:
-      DBT_PROFILES_DIR: ${{ github.workspace }}
-      DBT_TARGET: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
-      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-      SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-      SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-      SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-      SNOWFLAKE_DATABASE_PROD: ${{ secrets.SNOWFLAKE_DATABASE_PROD }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_CONNECTIONS_DEFAULT_SCHEMA: PUBLIC
+      SNOW_TARGET: ${{ github.ref_name == 'main' && 'snowflake_prod' || 'snowflake_dev' }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install Snowflake CLI
+        uses: snowflakedb/snowflake-cli-action@v2.0
         with:
-          python-version: "3.11"
+          default-config-file-path: config.toml
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Deploy dbt project
+        run: snow dbt deploy tokyopower_project --source . --default-target "$SNOW_TARGET" --force -x
 
-      - name: Install dbt packages
-        run: dbt deps
-
-      - name: dbt build
-        run: dbt build --target "$DBT_TARGET"
+      - name: Execute dbt build
+        run: snow dbt execute tokyopower_project build --target "$SNOW_TARGET" -x
