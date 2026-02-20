@@ -58,6 +58,12 @@ dbt test -s model_name       # 単一モデルのテスト
 - Snowflake 認証情報は GitHub Secrets に設定が必要:
   `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_DATABASE_PROD`
 
+## Snowflake Task (定期実行)
+
+- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC.REFRESH_FCT_SOLAR_POWER` — 毎日 UTC 00:10 に `fct_solar_power` テーブルを再構築
+- staging view (`stg_tokyopower__solar_power`) は常に最新のため再構築不要
+- 新しい marts テーブルを追加した場合は、対応する Snowflake Task も作成すること
+
 ## 環境 (dev / prod)
 
 - デフォルトターゲットは `dev` (`profiles.yml` の `target: dev`)
