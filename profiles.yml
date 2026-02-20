@@ -21,6 +21,13 @@ analytics:
       warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
       schema: public
       threads: 4
+    snowflake_dev:
+      type: snowflake
+      role: ACCOUNTADMIN
+      database: TOKYOPOWER_ANALYTICS
+      warehouse: PC_DBT_WH
+      schema: public
+      threads: 4
     snowflake_prod:
       type: snowflake
       role: ACCOUNTADMIN
