@@ -79,9 +79,11 @@ dbt docs serve    # ドキュメント閲覧
 
 `development` ブランチへの push で dev 環境、`main` へのマージで prod 環境に自動デプロイされます。
 
-### GitHub Secrets の設定
+### GitHub Environments の設定
 
-リポジトリの **Settings > Secrets and variables > Actions** で以下のシークレットを登録してください。
+リポジトリの **Settings > Environments** で `dev` と `prod` の 2 つの環境を作成し、それぞれにシークレットを登録してください。
+
+#### 各環境に共通で必要なシークレット
 
 | シークレット名 | 説明 | 例 |
 |---|---|---|
@@ -90,15 +92,21 @@ dbt docs serve    # ドキュメント閲覧
 | `SNOWFLAKE_PASSWORD` | Snowflake パスワード | — |
 | `SNOWFLAKE_ROLE` | 使用するロール | `TRANSFORMER` |
 | `SNOWFLAKE_WAREHOUSE` | 使用するウェアハウス | `TRANSFORMING` |
-| `SNOWFLAKE_DATABASE` | dev 用データベース | `ANALYTICS` |
-| `SNOWFLAKE_DATABASE_PROD` | prod 用データベース | `ANALYTICS_PROD` |
 
-> `.env` ファイルに設定しているものと同じ値を登録すれば OK です。
+#### 環境ごとのシークレット
+
+| 環境 | シークレット名 | 説明 |
+|---|---|---|
+| `dev` | `SNOWFLAKE_DATABASE` | dev 用データベース |
+| `prod` | `SNOWFLAKE_DATABASE` | prod 用データベース |
+| `prod` | `SNOWFLAKE_DATABASE_PROD` | prod 用データベース (`profiles.yml` が参照) |
+
+> `.env` ファイルに設定しているものと同じ値を登録すれば OK です。prod 環境では必要に応じてロールやウェアハウスを変更できます。
 
 ### デプロイフロー
 
-1. `development` ブランチに push → `dbt build --target dev` が実行される
-2. `main` ブランチに PR をマージ → `dbt build --target prod` が実行される
+1. `development` ブランチに push → 環境 `dev` で `dbt build --target dev` が実行される
+2. `main` ブランチに PR をマージ → 環境 `prod` で `dbt build --target prod` が実行される
 
 ## 命名規則
 
