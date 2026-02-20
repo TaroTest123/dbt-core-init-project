@@ -47,6 +47,23 @@ dbt test -s model_name       # 単一モデルのテスト
 
 - IMPORTANT: コミットメッセージは Conventional Commits に従う (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`)
 - スコープは任意 (例: `feat(models): add dim_customers`)
+- IMPORTANT: 開発は `development` ブランチで行い、`main` へは PR 経由でのみマージする
+- `main` への直接 push は禁止
+
+## CI/CD (GitHub Actions)
+
+- `.github/workflows/dbt-deploy.yml` で dev/prod デプロイを自動化
+- `development` ブランチへの push → `dbt build --target dev`
+- `main` ブランチへの push → `dbt build --target prod`
+- Snowflake 認証情報は GitHub Secrets に設定が必要:
+  `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_DATABASE_PROD`
+
+## 環境 (dev / prod)
+
+- デフォルトターゲットは `dev` (`profiles.yml` の `target: dev`)
+- 本番実行: `dbt run --target prod` / `dbt build --target prod`
+- `prod` ターゲットは `SNOWFLAKE_DATABASE_PROD` 環境変数を使用する
+- ソース `tokyopower` のデータベースは `target.name` で自動切り替え (dev: `TOKYOPOWER`, prod: `TOKYOPOWER_PROD`)
 
 ## materialization
 
