@@ -37,6 +37,37 @@ jobs:
           schema = "PUBLIC"
           EOF
 
+      - name: Generate profiles.yml for Snowflake CLI
+        run: |
+          cat > profiles.yml << EOF
+          analytics:
+            target: $SNOW_TARGET
+            outputs:
+              $SNOW_TARGET:
+                type: snowflake
+                account: "$SNOWFLAKE_ACCOUNT"
+                user: "$SNOWFLAKE_USER"
+                password: "$SNOWFLAKE_PASSWORD"
+                role: "$SNOWFLAKE_ROLE"
+                database: "$SNOWFLAKE_DATABASE"
+                warehouse: "$SNOWFLAKE_WAREHOUSE"
+                schema: public
+                threads: 4
+          EOF
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dbt and resolve packages
+        run: |
+          uv pip install --system dbt-core dbt-snowflake
+          dbt deps
+
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v2.0
         with:
