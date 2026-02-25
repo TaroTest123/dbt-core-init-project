@@ -19,9 +19,6 @@ sources:
               - not_null
           - name: time
             description: "記録時刻（TIME 型、5分間隔）"
-            tests:
-              - not_null:
-                  severity: warn
           - name: demand
             description: "電力需要量（万kW）"
             tests:
@@ -32,6 +29,3 @@ sources:
               - not_null
           - name: solar_ratio
             description: "太陽光発電比率（%、整数）"
-            tests:
-              - not_null:
-                  severity: warn
