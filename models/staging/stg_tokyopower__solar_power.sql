@@ -9,6 +9,8 @@ with source as (
     from {{ source('tokyopower', 'solar_power') }}
     where date is not null
       and time is not null
+      and demand is not null
+      and solar is not null
       and solar_ratio is not null
 
 ),
