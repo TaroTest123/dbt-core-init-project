@@ -6,6 +6,11 @@ models:
       東京電力管内の太陽光発電実績ファクトテーブル。
       5分間隔の記録粒度で、電力需要量・太陽光発電実績・発電比率を保持する。
       分析・ダッシュボード用途の主要テーブル。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+            - recorded_time
     columns:
       - name: recorded_date
         description: "記録日（TIMESTAMP 型）"

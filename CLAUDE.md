@@ -82,6 +82,18 @@ dbt test -s model_name       # 単一モデルのテスト
   - ソース (参照のみ): `TOKYOPOWER` (dev) / `TOKYOPOWER_PROD` (prod) — `_sources.yml` で `target.name` により自動切り替え
   - モデル出力先: `TOKYOPOWER_ANALYTICS` (dev) / `TOKYOPOWER_ANALYTICS_PROD` (prod) — `profiles.yml` の `database` で設定
 
+## ドキュメントとテストの品質基準
+
+- IMPORTANT: すべてのモデル・ソースに日本語の description を必ず定義する（モデルレベル + カラムレベル）
+- IMPORTANT: 新しいモデルやカラムを追加したら、対応する `_models.yml` / `_sources.yml` に description とテストを同時に追加する
+- テストの最低基準:
+  - 全カラムに `not_null` テスト（NULL を許容するカラムは staging でフィルタまたは変換して除外する）
+  - テーブルの粒度（grain）を表すカラムの組み合わせに `dbt_utils.unique_combination_of_columns` テスト
+  - ソーステーブルのカラムにも `not_null` テストを定義する
+- staging モデルではソースデータの不正値（NULL 行など）をフィルタし、下流に流さない
+- `_models.yml` の配置: `models/staging/_models.yml`、`models/marts/_models.yml`
+- ドキュメント・テストの変更後は `dbt parse` で構文検証を行う
+
 ## materialization
 
 - `models/staging/`: view (デフォルト設定済み)

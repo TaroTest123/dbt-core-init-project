@@ -7,6 +7,7 @@ with source as (
         solar,
         solar_ratio
     from {{ source('tokyopower', 'solar_power') }}
+    where date is not null
 
 ),
 
