@@ -14,9 +14,28 @@ clean-targets:
   - target
   - dbt_packages
 
+seeds:
+  analytics:
+    seed_electricity_rate:
+      +column_types:
+        fiscal_year: integer
+        rate_category: varchar
+        electricity_rate_yen_per_kwh: float
+        valid_from: date
+        valid_to: date
+    seed_co2_emission_factor:
+      +column_types:
+        fiscal_year: integer
+        provider: varchar
+        co2_factor_t_per_kwh: float
+        valid_from: date
+        valid_to: date
+
 models:
   analytics:
     staging:
       +materialized: view
     marts:
       +materialized: table
+      intermediate:
+        +materialized: view
