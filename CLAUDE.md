@@ -47,6 +47,7 @@ dbt test -s model_name       # 単一モデルのテスト
 
 - IMPORTANT: コミットメッセージは Conventional Commits に従う (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`)
 - スコープは任意 (例: `feat(models): add dim_customers`)
+- IMPORTANT: コミットメッセージ、PRタイトル・本文はすべて日本語で記述する（プレフィックスは英語の Conventional Commits 形式を維持）
 - IMPORTANT: 開発は `development` ブランチで行い、`main` へは PR 経由でのみマージする
 - `main` への直接 push は禁止
 

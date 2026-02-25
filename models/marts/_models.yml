@@ -32,3 +32,313 @@ models:
         description: "太陽光発電比率（%、整数）"
         tests:
           - not_null
+
+  - name: fct_solar_power_30min
+    description: >
+      東京電力管内の太陽光発電実績を30分間隔で集計したファクトテーブル。
+      平均・最大・最小の電力メトリクス、エネルギー量（万kWh）、年初来累積エネルギー量を保持する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - period_start_at
+    columns:
+      - name: period_start_at
+        description: "30分間隔の期間開始タイムスタンプ"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: max_demand_mw
+        description: "最大電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: min_demand_mw
+        description: "最小電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: max_solar_mw
+        description: "最大太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: min_solar_mw
+        description: "最小太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_ratio_pct
+        description: "平均太陽光発電比率（%）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、期間内合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、期間内合計）"
+        tests:
+          - not_null
+      - name: cumulative_demand_energy_mwh
+        description: "電力需要量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: cumulative_solar_energy_mwh
+        description: "太陽光発電量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: record_count
+        description: "集約元レコード数"
+        tests:
+          - not_null
+
+  - name: fct_solar_power_hourly
+    description: >
+      東京電力管内の太陽光発電実績を1時間間隔で集計したファクトテーブル。
+      平均・最大・最小の電力メトリクス、エネルギー量（万kWh）、年初来累積エネルギー量を保持する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - period_start_at
+    columns:
+      - name: period_start_at
+        description: "1時間間隔の期間開始タイムスタンプ"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: max_demand_mw
+        description: "最大電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: min_demand_mw
+        description: "最小電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: max_solar_mw
+        description: "最大太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: min_solar_mw
+        description: "最小太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_ratio_pct
+        description: "平均太陽光発電比率（%）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、期間内合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、期間内合計）"
+        tests:
+          - not_null
+      - name: cumulative_demand_energy_mwh
+        description: "電力需要量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: cumulative_solar_energy_mwh
+        description: "太陽光発電量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: record_count
+        description: "集約元レコード数"
+        tests:
+          - not_null
+
+  - name: fct_solar_power_daily
+    description: >
+      東京電力管内の太陽光発電実績を日次で集計したファクトテーブル。
+      平均・最大・最小の電力メトリクス、エネルギー量（万kWh）、年初来累積エネルギー量を保持する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+    columns:
+      - name: recorded_date
+        description: "記録日（DATE 型）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: max_demand_mw
+        description: "最大電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: min_demand_mw
+        description: "最小電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: max_solar_mw
+        description: "最大太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: min_solar_mw
+        description: "最小太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_ratio_pct
+        description: "平均太陽光発電比率（%）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、日次合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、日次合計）"
+        tests:
+          - not_null
+      - name: cumulative_demand_energy_mwh
+        description: "電力需要量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: cumulative_solar_energy_mwh
+        description: "太陽光発電量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: record_count
+        description: "集約元レコード数"
+        tests:
+          - not_null
+
+  - name: fct_solar_power_weekly
+    description: >
+      東京電力管内の太陽光発電実績を週次で集計したファクトテーブル。
+      ISO週（月曜始まり）で集計し、平均・最大・最小の電力メトリクス、エネルギー量（万kWh）、年初来累積エネルギー量を保持する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - week_start_date
+    columns:
+      - name: week_start_date
+        description: "週の開始日（DATE 型、ISO週の月曜日）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: max_demand_mw
+        description: "最大電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: min_demand_mw
+        description: "最小電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: max_solar_mw
+        description: "最大太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: min_solar_mw
+        description: "最小太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_ratio_pct
+        description: "平均太陽光発電比率（%）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、週次合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、週次合計）"
+        tests:
+          - not_null
+      - name: cumulative_demand_energy_mwh
+        description: "電力需要量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: cumulative_solar_energy_mwh
+        description: "太陽光発電量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: record_count
+        description: "集約元レコード数"
+        tests:
+          - not_null
+
+  - name: fct_solar_power_monthly
+    description: >
+      東京電力管内の太陽光発電実績を月次で集計したファクトテーブル。
+      平均・最大・最小の電力メトリクス、エネルギー量（万kWh）、年初来累積エネルギー量を保持する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - month_start_date
+    columns:
+      - name: month_start_date
+        description: "月の開始日（DATE 型、各月1日）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: max_demand_mw
+        description: "最大電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: min_demand_mw
+        description: "最小電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: max_solar_mw
+        description: "最大太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: min_solar_mw
+        description: "最小太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_ratio_pct
+        description: "平均太陽光発電比率（%）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、月次合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、月次合計）"
+        tests:
+          - not_null
+      - name: cumulative_demand_energy_mwh
+        description: "電力需要量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: cumulative_solar_energy_mwh
+        description: "太陽光発電量の年度累計（万kWh、年初来）"
+        tests:
+          - not_null
+      - name: record_count
+        description: "集約元レコード数"
+        tests:
+          - not_null
