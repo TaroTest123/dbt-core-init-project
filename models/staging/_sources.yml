@@ -12,3 +12,14 @@ sources:
         freshness:
           warn_after: {count: 1, period: day}
           error_after: {count: 2, period: day}
+        columns:
+          - name: date
+            description: "記録日（TEXT 型、'YYYY/MM/DD' 形式）"
+          - name: time
+            description: "記録時刻（TIME 型、5分間隔）"
+          - name: demand
+            description: "電力需要量（万kW）"
+          - name: solar
+            description: "太陽光発電実績（万kW）"
+          - name: solar_ratio
+            description: "太陽光発電比率（%、整数）"

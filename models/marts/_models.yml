@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: fct_solar_power
+    description: >
+      東京電力管内の太陽光発電実績ファクトテーブル。
+      5分間隔の記録粒度で、電力需要量・太陽光発電実績・発電比率を保持する。
+      分析・ダッシュボード用途の主要テーブル。
+    columns:
+      - name: recorded_date
+        description: "記録日（TIMESTAMP 型）"
+        tests:
+          - not_null
+      - name: recorded_time
+        description: "記録時刻（TIME 型、5分間隔）"
+        tests:
+          - not_null
+      - name: demand_mw
+        description: "電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: solar_mw
+        description: "太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: solar_ratio_pct
+        description: "太陽光発電比率（%、整数）"
+        tests:
+          - not_null
