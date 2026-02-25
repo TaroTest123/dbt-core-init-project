@@ -5,14 +5,17 @@ on:
     branches:
       - development
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   dbt-deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.event_name == 'push' && github.ref_name == 'main' && 'prod' || 'dev' }}
 
     env:
-      SNOW_TARGET: ${{ github.ref_name == 'main' && 'snowflake_prod' || 'snowflake_dev' }}
+      SNOW_TARGET: ${{ github.event_name == 'push' && github.ref_name == 'main' && 'snowflake_prod' || 'snowflake_dev' }}
       SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
       SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
