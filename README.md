@@ -107,6 +107,18 @@ Snowflake CLI (`snow dbt`) を使い、`development` ブランチへの push で
 1. `development` ブランチに push → `snow dbt deploy` + `snow dbt execute build --target snowflake_dev`
 2. `main` ブランチに PR をマージ → `snow dbt deploy` + `snow dbt execute build --target snowflake_prod`
 
+### dbt Docs (GitHub Pages)
+
+`main` ブランチへのマージ時に、`.github/workflows/dbt-docs.yml` が `dbt docs generate` を実行し、GitHub Pages にドキュメントを自動デプロイします。
+
+- ワークフロー: `.github/workflows/dbt-docs.yml`
+- ターゲット: `snowflake_prod`（本番データベースのカラムメタデータを含む）
+- URL: `https://<owner>.github.io/<repo>/`
+
+#### 初回設定
+
+リポジトリの **Settings > Pages > Source** で **GitHub Actions** を選択してください。追加のシークレット設定は不要です（`prod` 環境の既存シークレットを再利用）。
+
 ## 命名規則
 
 | レイヤー | プレフィックス | 例 |

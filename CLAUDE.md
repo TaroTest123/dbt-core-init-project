@@ -58,6 +58,14 @@ dbt test -s model_name       # 単一モデルのテスト
 - Snowflake 認証情報は GitHub Secrets に設定が必要:
   `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`
 
+## dbt Docs (GitHub Pages)
+
+- `.github/workflows/dbt-docs.yml` で `main` ブランチへの push 時にドキュメントを自動生成・デプロイ
+- `dbt docs generate --target snowflake_prod` で本番データベースのカラムメタデータを含むドキュメントを生成
+- `actions/deploy-pages` で GitHub Pages にデプロイ
+- `prod` GitHub Environment の既存シークレットを再利用（追加設定不要）
+- 初回のみ GitHub リポジトリの **Settings > Pages > Source** で **GitHub Actions** を選択する必要あり
+
 ## Snowflake-native dbt (定期実行)
 
 - 各環境に `TOKYOPOWER_TRANSFORM` (dbt プロジェクト)、`DAILY_DBT_BUILD` (Task) を配置
