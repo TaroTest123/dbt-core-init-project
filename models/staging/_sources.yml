@@ -15,11 +15,21 @@ sources:
         columns:
           - name: date
             description: "記録日（TEXT 型、'YYYY/MM/DD' 形式）"
+            tests:
+              - not_null
           - name: time
             description: "記録時刻（TIME 型、5分間隔）"
+            tests:
+              - not_null
           - name: demand
             description: "電力需要量（万kW）"
+            tests:
+              - not_null
           - name: solar
             description: "太陽光発電実績（万kW）"
+            tests:
+              - not_null
           - name: solar_ratio
             description: "太陽光発電比率（%、整数）"
+            tests:
+              - not_null

@@ -7,6 +7,11 @@ models:
       ソーステーブルの TEXT 型日付を TIMESTAMP 型に変換し、
       カラム名をビジネス上わかりやすい名前にリネームしている。
       5分間隔の記録データ。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+            - recorded_time
     columns:
       - name: recorded_date
         description: "記録日（TIMESTAMP 型、ソースの TEXT 型日付から変換）"
