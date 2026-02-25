@@ -55,6 +55,14 @@ jobs:
                 threads: 4
           EOF
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dbt and resolve packages
+        run: |
+          uv pip install --system dbt-core dbt-snowflake
+          dbt deps
+
       - name: Install Snowflake CLI
         uses: snowflakedb/snowflake-cli-action@v2.0
         with:
