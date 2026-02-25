@@ -75,9 +75,9 @@ dbt docs generate # ドキュメント生成
 dbt docs serve    # ドキュメント閲覧
 ```
 
-## CI/CD (GitHub Actions)
+## CI/CD (GitHub Actions + Snowflake CLI)
 
-`development` ブランチへの push で dev 環境、`main` へのマージで prod 環境に自動デプロイされます。
+Snowflake CLI (`snow dbt`) を使い、`development` ブランチへの push で dev 環境、`main` へのマージで prod 環境に自動デプロイされます。
 
 ### GitHub Environments の設定
 
@@ -93,20 +93,31 @@ dbt docs serve    # ドキュメント閲覧
 | `SNOWFLAKE_ROLE` | 使用するロール | `TRANSFORMER` |
 | `SNOWFLAKE_WAREHOUSE` | 使用するウェアハウス | `TRANSFORMING` |
 
-#### 環境ごとのシークレット (モデル出力先)
+#### 環境ごとのシークレット (dbt プロジェクト配置先)
 
 | 環境 | シークレット名 | 値の例 | 説明 |
 |---|---|---|---|
-| `dev` | `SNOWFLAKE_DATABASE` | `TOKYOPOWER_ANALYTICS` | dev モデル出力先 |
-| `prod` | `SNOWFLAKE_DATABASE` | `TOKYOPOWER_ANALYTICS_PROD` | (ワークフロー env 用) |
-| `prod` | `SNOWFLAKE_DATABASE_PROD` | `TOKYOPOWER_ANALYTICS_PROD` | prod モデル出力先 (`profiles.yml` が参照) |
+| `dev` | `SNOWFLAKE_DATABASE` | `TOKYOPOWER_ANALYTICS` | dev の dbt プロジェクト配置先 |
+| `prod` | `SNOWFLAKE_DATABASE` | `TOKYOPOWER_ANALYTICS_PROD` | prod の dbt プロジェクト配置先 |
 
-> **注意**: モデル出力先とソースデータは別のデータベースに分離しています。ソースデータ (`TOKYOPOWER` / `TOKYOPOWER_PROD`) は `_sources.yml` で定義されており、GitHub Secrets の設定は不要です。
+> **注意**: モデル出力先とソースデータは別のデータベースに分離しています。ソースデータ (`TOKYOPOWER` / `TOKYOPOWER_PROD`) は `_sources.yml` で定義されており、GitHub Secrets の設定は不要です。モデル出力先は `profiles.yml` の `snowflake_dev` / `snowflake_prod` ターゲットにハードコードされています。
 
 ### デプロイフロー
 
-1. `development` ブランチに push → 環境 `dev` で `dbt build --target dev` が実行される
-2. `main` ブランチに PR をマージ → 環境 `prod` で `dbt build --target prod` が実行される
+1. `development` ブランチに push → `snow dbt deploy` + `snow dbt execute build --target snowflake_dev`
+2. `main` ブランチに PR をマージ → `snow dbt deploy` + `snow dbt execute build --target snowflake_prod`
+
+### dbt Docs (GitHub Pages)
+
+`main` ブランチへのマージ時に、`.github/workflows/dbt-docs.yml` が `dbt docs generate` を実行し、GitHub Pages にドキュメントを自動デプロイします。
+
+- ワークフロー: `.github/workflows/dbt-docs.yml`
+- ターゲット: `snowflake_prod`（本番データベースのカラムメタデータを含む）
+- URL: `https://<owner>.github.io/<repo>/`
+
+#### 初回設定
+
+リポジトリの **Settings > Pages > Source** で **GitHub Actions** を選択してください。追加のシークレット設定は不要です（`prod` 環境の既存シークレットを再利用）。
 
 ## 命名規則
 

@@ -1,37 +1,23 @@
 analytics:
-  target: dev
+  target: snowflake_dev
   outputs:
-    dev:
-      type: snowflake
-      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-      user: "{{ env_var('SNOWFLAKE_USER') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
-      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
-      database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
-      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
-      schema: public
-      threads: 4
-    prod:
-      type: snowflake
-      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-      user: "{{ env_var('SNOWFLAKE_USER') }}"
-      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
-      role: "{{ env_var('SNOWFLAKE_ROLE') }}"
-      database: "{{ env_var('SNOWFLAKE_DATABASE_PROD') }}"
-      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
-      schema: public
-      threads: 4
     snowflake_dev:
       type: snowflake
-      role: ACCOUNTADMIN
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ACCOUNTADMIN') }}"
       database: TOKYOPOWER_ANALYTICS
-      warehouse: PC_DBT_WH
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'PC_DBT_WH') }}"
       schema: public
       threads: 4
     snowflake_prod:
       type: snowflake
-      role: ACCOUNTADMIN
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'ACCOUNTADMIN') }}"
       database: TOKYOPOWER_ANALYTICS_PROD
-      warehouse: PC_DBT_WH
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'PC_DBT_WH') }}"
       schema: public
       threads: 4

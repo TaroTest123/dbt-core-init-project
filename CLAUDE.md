@@ -50,26 +50,34 @@ dbt test -s model_name       # 単一モデルのテスト
 - IMPORTANT: 開発は `development` ブランチで行い、`main` へは PR 経由でのみマージする
 - `main` への直接 push は禁止
 
-## CI/CD (GitHub Actions)
+## CI/CD (GitHub Actions + Snowflake CLI)
 
-- `.github/workflows/dbt-deploy.yml` で dev/prod デプロイを自動化
-- `development` ブランチへの push → `dbt build --target dev`
-- `main` ブランチへの push → `dbt build --target prod`
+- `.github/workflows/dbt-deploy.yml` で Snowflake CLI (`snow dbt`) を使い dev/prod デプロイを自動化
+- `development` ブランチへの push → `snow dbt deploy` + `snow dbt execute build --target snowflake_dev`
+- `main` ブランチへの push → `snow dbt deploy` + `snow dbt execute build --target snowflake_prod`
 - Snowflake 認証情報は GitHub Secrets に設定が必要:
-  `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`, `SNOWFLAKE_DATABASE_PROD`
+  `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PASSWORD`, `SNOWFLAKE_ROLE`, `SNOWFLAKE_WAREHOUSE`, `SNOWFLAKE_DATABASE`
+
+## dbt Docs (GitHub Pages)
+
+- `.github/workflows/dbt-docs.yml` で `main` ブランチへの push 時にドキュメントを自動生成・デプロイ
+- `dbt docs generate --target snowflake_prod` で本番データベースのカラムメタデータを含むドキュメントを生成
+- `actions/deploy-pages` で GitHub Pages にデプロイ
+- `prod` GitHub Environment の既存シークレットを再利用（追加設定不要）
+- 初回のみ GitHub リポジトリの **Settings > Pages > Source** で **GitHub Actions** を選択する必要あり
 
 ## Snowflake-native dbt (定期実行)
 
-- 各環境に `TOKYOPOWER_PROJECT` (dbt プロジェクト)、`DBT_CORE_REPO` (Git 連携)、`DAILY_DBT_BUILD` (Task) を配置
-- `TOKYOPOWER_ANALYTICS.PUBLIC` (dev): `development` ブランチ / `snowflake_dev` ターゲット
-- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC` (prod): `main` ブランチ / `snowflake_prod` ターゲット
+- 各環境に `TOKYOPOWER_TRANSFORM` (dbt プロジェクト)、`DAILY_DBT_BUILD` (Task) を配置
+- `TOKYOPOWER_ANALYTICS.PUBLIC` (dev): `snowflake_dev` ターゲット
+- `TOKYOPOWER_ANALYTICS_PROD.PUBLIC` (prod): `snowflake_prod` ターゲット
 - 両環境とも毎日 JST 00:35 に `dbt build` を自動実行
-- コード更新後の反映: `ALTER GIT REPOSITORY ... FETCH` → `ALTER DBT PROJECT ... ADD VERSION FROM ...`
+- コード更新は GitHub Actions の `snow dbt deploy --force` で自動反映される
 
 ## 環境 (dev / prod)
 
-- デフォルトターゲットは `dev` (`profiles.yml` の `target: dev`)
-- 本番実行: `dbt run --target prod` / `dbt build --target prod`
+- デフォルトターゲットは `snowflake_dev` (`profiles.yml` の `target: snowflake_dev`)
+- 本番実行: `dbt run --target snowflake_prod` / `dbt build --target snowflake_prod`
 - ソースデータベースとモデル出力先データベースは分離する:
   - ソース (参照のみ): `TOKYOPOWER` (dev) / `TOKYOPOWER_PROD` (prod) — `_sources.yml` で `target.name` により自動切り替え
   - モデル出力先: `TOKYOPOWER_ANALYTICS` (dev) / `TOKYOPOWER_ANALYTICS_PROD` (prod) — `profiles.yml` の `database` で設定
