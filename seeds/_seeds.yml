@@ -1,0 +1,66 @@
+version: 2
+
+seeds:
+  - name: seed_electricity_rate
+    description: >
+      産業用電気料金単価マスタ（年度別）。
+      需要電力量にこの単価を乗じて推定電気料金を算出する。
+      valid_from/valid_to は年度中の改定に備えた拡張用カラム。
+    columns:
+      - name: fiscal_year
+        description: "対象年度（暦年）"
+        tests:
+          - not_null
+      - name: rate_category
+        description: "料金カテゴリ（industrial: 産業用）"
+        tests:
+          - not_null
+      - name: electricity_rate_yen_per_kwh
+        description: "電気料金単価（円/kWh）"
+        tests:
+          - not_null
+      - name: valid_from
+        description: "適用開始日"
+        tests:
+          - not_null
+      - name: valid_to
+        description: "適用終了日"
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - fiscal_year
+            - rate_category
+
+  - name: seed_co2_emission_factor
+    description: >
+      CO2 排出係数マスタ（年度別・電力事業者別）。
+      系統電力消費量にこの係数を乗じて CO2 排出量を推定する。
+      valid_from/valid_to は年度中の改定に備えた拡張用カラム。
+    columns:
+      - name: fiscal_year
+        description: "対象年度（暦年）"
+        tests:
+          - not_null
+      - name: provider
+        description: "電力事業者コード（tepco: 東京電力）"
+        tests:
+          - not_null
+      - name: co2_factor_t_per_kwh
+        description: "CO2 排出係数（t-CO2/kWh）"
+        tests:
+          - not_null
+      - name: valid_from
+        description: "適用開始日"
+        tests:
+          - not_null
+      - name: valid_to
+        description: "適用終了日"
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - fiscal_year
+            - provider

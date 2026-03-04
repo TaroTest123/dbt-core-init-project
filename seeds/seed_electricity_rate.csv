@@ -1,0 +1,6 @@
+fiscal_year,rate_category,electricity_rate_yen_per_kwh,valid_from,valid_to
+2022,industrial,27.0,2022-01-01,2022-12-31
+2023,industrial,29.0,2023-01-01,2023-12-31
+2024,industrial,30.0,2024-01-01,2024-12-31
+2025,industrial,31.0,2025-01-01,2025-12-31
+2026,industrial,31.0,2026-01-01,2026-12-31

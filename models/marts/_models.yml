@@ -342,3 +342,390 @@ models:
         description: "集約元レコード数"
         tests:
           - not_null
+
+  - name: dim_date
+    description: >
+      日付ディメンションテーブル。
+      fct_solar_power_daily から日付を抽出し、年・四半期・月・曜日・季節などの属性を付与する。
+      各ファクトテーブルとの結合で季節・曜日分析を可能にする。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_key
+    columns:
+      - name: date_key
+        description: "日付キー（DATE 型）"
+        tests:
+          - not_null
+      - name: year
+        description: "年（整数）"
+        tests:
+          - not_null
+      - name: quarter
+        description: "四半期（1-4）"
+        tests:
+          - not_null
+      - name: month
+        description: "月（1-12）"
+        tests:
+          - not_null
+      - name: month_name
+        description: "月名（英語略称: Jan, Feb, ...）"
+        tests:
+          - not_null
+      - name: week_of_year
+        description: "年内の週番号（1-53）"
+        tests:
+          - not_null
+      - name: day_of_week
+        description: "曜日番号（0=日曜, 6=土曜）"
+        tests:
+          - not_null
+      - name: day_name
+        description: "曜日名（英語略称: Mon, Tue, ...）"
+        tests:
+          - not_null
+      - name: is_weekend
+        description: "週末フラグ（土日=true）"
+        tests:
+          - not_null
+      - name: season
+        description: "季節（春・夏・秋・冬）"
+        tests:
+          - not_null
+
+  - name: dim_time_of_day
+    description: >
+      時間帯ディメンションテーブル。
+      fct_solar_power_hourly から時間帯を抽出し、時間帯カテゴリ・ピーク時間・太陽光時間の属性を付与する。
+      時間帯カテゴリ別の分析軸を提供する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - hour_of_day
+    columns:
+      - name: hour_of_day
+        description: "時間（0-23）"
+        tests:
+          - not_null
+      - name: time_slot_label
+        description: "時間帯ラベル（早朝/朝/昼/午後/夕方/夜）"
+        tests:
+          - not_null
+      - name: is_peak_hour
+        description: "ピーク時間帯フラグ（9-20時=true）"
+        tests:
+          - not_null
+      - name: is_solar_hour
+        description: "太陽光発電時間帯フラグ（6-18時=true）"
+        tests:
+          - not_null
+
+  - name: int_solar_power__daily_profile
+    description: >
+      日別×時間帯プロファイル中間テーブル。
+      fct_solar_power_hourly に dim_date・dim_time_of_day を結合し、
+      日付属性（季節・曜日）と時間帯属性（時間帯ラベル・ピーク区分）を付与した時間別データ。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+            - hour_of_day
+    columns:
+      - name: recorded_date
+        description: "記録日（DATE 型）"
+        tests:
+          - not_null
+      - name: hour_of_day
+        description: "時間（0-23）"
+        tests:
+          - not_null
+      - name: season
+        description: "季節（春・夏・秋・冬）"
+        tests:
+          - not_null
+      - name: is_weekend
+        description: "週末フラグ（土日=true）"
+        tests:
+          - not_null
+      - name: time_slot_label
+        description: "時間帯ラベル（早朝/朝/昼/午後/夕方/夜）"
+        tests:
+          - not_null
+      - name: is_peak_hour
+        description: "ピーク時間帯フラグ（9-20時=true）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_ratio_pct
+        description: "平均太陽光発電比率（%）"
+        tests:
+          - not_null
+
+  - name: int_solar_power__peak_periods
+    description: >
+      ピーク時間帯特定中間テーブル。
+      fct_solar_power_daily と fct_solar_power_hourly から、
+      日別に需要ピーク時刻・太陽光ピーク時刻・最小需要時刻を特定する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+    columns:
+      - name: recorded_date
+        description: "記録日（DATE 型）"
+        tests:
+          - not_null
+      - name: peak_demand_hour
+        description: "需要ピーク時刻（0-23）"
+        tests:
+          - not_null
+      - name: peak_demand_mw
+        description: "需要ピーク時の平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: peak_solar_hour
+        description: "太陽光発電ピーク時刻（0-23）"
+        tests:
+          - not_null
+      - name: peak_solar_mw
+        description: "太陽光発電ピーク時の平均発電量（万kW）"
+        tests:
+          - not_null
+      - name: min_demand_hour
+        description: "最小需要時刻（0-23）"
+        tests:
+          - not_null
+      - name: min_demand_mw
+        description: "最小需要時の平均電力需要量（万kW）"
+        tests:
+          - not_null
+
+  - name: fct_demand_supply_balance
+    description: >
+      需給バランス分析ファクトテーブル。
+      日別の需給ギャップ、太陽光カバー率、ピーク情報を統合し、
+      季節・曜日属性を付与した需給バランスの日次分析データ。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+    columns:
+      - name: recorded_date
+        description: "記録日（DATE 型）"
+        tests:
+          - not_null
+      - name: season
+        description: "季節（春・夏・秋・冬）"
+        tests:
+          - not_null
+      - name: is_weekend
+        description: "週末フラグ（土日=true）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "日平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "日平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、日次合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、日次合計）"
+        tests:
+          - not_null
+      - name: solar_coverage_pct
+        description: "太陽光カバー率（%、太陽光発電量/需要量×100）"
+        tests:
+          - not_null
+      - name: energy_gap_mwh
+        description: "需給ギャップ（万kWh、需要-太陽光）"
+        tests:
+          - not_null
+      - name: peak_demand_hour
+        description: "需要ピーク時刻（0-23）"
+        tests:
+          - not_null
+      - name: peak_solar_hour
+        description: "太陽光発電ピーク時刻（0-23）"
+        tests:
+          - not_null
+      - name: peak_gap_hours
+        description: "需要ピークと太陽光ピークの時刻差（時間）"
+        tests:
+          - not_null
+
+  - name: fct_solar_power_yoy
+    description: >
+      年次比較分析ファクトテーブル。
+      fct_solar_power_monthly と fct_solar_power_daily から、
+      月別の前年同月比較（YoY）を算出する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - month_start_date
+    columns:
+      - name: month_start_date
+        description: "月の開始日（DATE 型、各月1日）"
+        tests:
+          - not_null
+      - name: year
+        description: "年（整数）"
+        tests:
+          - not_null
+      - name: month
+        description: "月（1-12）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "月平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "月平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、月次合計）"
+        tests:
+          - not_null
+      - name: prev_year_solar_energy_mwh
+        description: "前年同月の太陽光発電量（万kWh、初年度は NULL）"
+      - name: yoy_solar_change_pct
+        description: "前年同月比変化率（%、初年度は NULL）"
+      - name: avg_daily_record_count
+        description: "日平均レコード数（データ品質指標）"
+        tests:
+          - not_null
+
+  - name: fct_demand_supply_kpi
+    description: >
+      需給 KPI ファクトテーブル（日次粒度）。
+      fct_demand_supply_balance に電気料金単価と CO2 排出係数を結合し、
+      推定電気料金・太陽光コスト削減額・系統 CO2 排出量・太陽光 CO2 回避量を算出する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - recorded_date
+    columns:
+      - name: recorded_date
+        description: "記録日（DATE 型）"
+        tests:
+          - not_null
+      - name: demand_energy_mwh
+        description: "電力需要量（万kWh、日次合計）"
+        tests:
+          - not_null
+      - name: solar_energy_mwh
+        description: "太陽光発電量（万kWh、日次合計）"
+        tests:
+          - not_null
+      - name: energy_gap_mwh
+        description: "需給ギャップ（万kWh、需要-太陽光）"
+        tests:
+          - not_null
+      - name: electricity_rate_yen_per_kwh
+        description: "適用電気料金単価（円/kWh）"
+        tests:
+          - not_null
+      - name: co2_factor_t_per_kwh
+        description: "適用 CO2 排出係数（t-CO2/kWh）"
+        tests:
+          - not_null
+      - name: estimated_demand_cost_yen
+        description: "推定電力需要コスト（円、demand_energy × 10,000 × 単価）"
+        tests:
+          - not_null
+      - name: solar_cost_saving_yen
+        description: "太陽光によるコスト削減額（円、solar_energy × 10,000 × 単価）"
+        tests:
+          - not_null
+      - name: grid_co2_emission_t
+        description: "系統電力 CO2 排出量（t-CO2、energy_gap × 10,000 × 排出係数）"
+        tests:
+          - not_null
+      - name: solar_co2_avoided_t
+        description: "太陽光による CO2 回避量（t-CO2、solar_energy × 10,000 × 排出係数）"
+        tests:
+          - not_null
+
+  - name: rpt_solar_executive_summary
+    description: >
+      エグゼクティブサマリーレポートテーブル。
+      月別の需給サマリーと YoY 比較を 1 テーブルに統合した経営レポート用データ。
+      fct_demand_supply_balance、fct_solar_power_yoy、fct_solar_power_monthly、fct_demand_supply_kpi を結合する。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - month_start_date
+    columns:
+      - name: month_start_date
+        description: "月の開始日（DATE 型、各月1日）"
+        tests:
+          - not_null
+      - name: year
+        description: "年（整数）"
+        tests:
+          - not_null
+      - name: month
+        description: "月（1-12）"
+        tests:
+          - not_null
+      - name: avg_demand_mw
+        description: "月平均電力需要量（万kW）"
+        tests:
+          - not_null
+      - name: avg_solar_mw
+        description: "月平均太陽光発電実績（万kW）"
+        tests:
+          - not_null
+      - name: total_demand_energy_mwh
+        description: "月間電力需要量合計（万kWh）"
+        tests:
+          - not_null
+      - name: total_solar_energy_mwh
+        description: "月間太陽光発電量合計（万kWh）"
+        tests:
+          - not_null
+      - name: avg_solar_coverage_pct
+        description: "月平均太陽光カバー率（%）"
+        tests:
+          - not_null
+      - name: avg_energy_gap_mwh
+        description: "月平均需給ギャップ（万kWh）"
+        tests:
+          - not_null
+      - name: yoy_solar_change_pct
+        description: "前年同月比太陽光発電量変化率（%、初年度は NULL）"
+      - name: operating_days
+        description: "月間稼働日数"
+        tests:
+          - not_null
+      - name: total_estimated_demand_cost_yen
+        description: "月間推定電力需要コスト合計（円）"
+        tests:
+          - not_null
+      - name: total_solar_cost_saving_yen
+        description: "月間太陽光コスト削減額合計（円）"
+        tests:
+          - not_null
+      - name: total_grid_co2_emission_t
+        description: "月間系統電力 CO2 排出量合計（t-CO2）"
+        tests:
+          - not_null
+      - name: total_solar_co2_avoided_t
+        description: "月間太陽光 CO2 回避量合計（t-CO2）"
+        tests:
+          - not_null
